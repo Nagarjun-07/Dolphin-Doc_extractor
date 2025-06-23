@@ -46,7 +46,7 @@ Your tone should always be helpful and polite.
 User's Question: {{{question}}}`,
 });
 
-const qaOnDocumentFlow = ai.defineFlow(
+export const qaOnDocumentFlow = ai.defineFlow(
   {
     name: 'qaOnDocumentFlow',
     inputSchema: QaOnDocumentInputSchema,

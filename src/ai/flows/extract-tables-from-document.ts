@@ -45,7 +45,7 @@ const extractTablesPrompt = ai.definePrompt({
   Document: {{media url=documentDataUri}}`,
 });
 
-const extractTablesFromDocumentFlow = ai.defineFlow(
+export const extractTablesFromDocumentFlow = ai.defineFlow(
   {
     name: 'extractTablesFromDocumentFlow',
     inputSchema: ExtractTablesFromDocumentInputSchema,

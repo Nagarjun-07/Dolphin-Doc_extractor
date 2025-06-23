@@ -38,7 +38,7 @@ const extractTextPrompt = ai.definePrompt({
 Document: {{media url=documentDataUri}}`,
 });
 
-const extractTextFromDocumentFlow = ai.defineFlow(
+export const extractTextFromDocumentFlow = ai.defineFlow(
   {
     name: 'extractTextFromDocumentFlow',
     inputSchema: ExtractTextFromDocumentInputSchema,
