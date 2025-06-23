@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -116,7 +117,7 @@ export default function HomePage() {
 
   if (!isClient) {
     return (
-      <div className="flex flex-col min-h-screen bg-background">
+      <div className="flex flex-col flex-1">
         <AppHeader />
         <main className="container mx-auto p-4 md:p-6 lg:p-8 flex-grow w-full flex items-center justify-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -126,7 +127,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col flex-1">
       <AppHeader />
       <main className="container mx-auto p-4 md:p-6 lg:p-8 flex-grow w-full">
         <div className="space-y-6 max-w-4xl mx-auto">
