@@ -22,7 +22,7 @@ export function Chatbot({ documentContext }: ChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'bot',
-      content: "Hello! Ask me anything about the document you've just uploaded.",
+      content: "I'm ready to help! Please feel free to ask me anything about the document you've uploaded.",
     },
   ]);
   const [inputValue, setInputValue] = useState('');

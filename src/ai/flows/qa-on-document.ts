@@ -19,7 +19,7 @@ const QaOnDocumentInputSchema = z.object({
 export type QaOnDocumentInput = z.infer<typeof QaOnDocumentInputSchema>;
 
 const QaOnDocumentOutputSchema = z.object({
-  answer: z.string().describe('The answer to the question, based on the document content.'),
+  answer: z.string().describe('The answer to the question, based on the document content and general knowledge.'),
 });
 export type QaOnDocumentOutput = z.infer<typeof QaOnDocumentOutputSchema>;
 
@@ -31,14 +31,13 @@ const qaPrompt = ai.definePrompt({
   name: 'qaPrompt',
   input: {schema: QaOnDocumentInputSchema},
   output: {schema: QaOnDocumentOutputSchema},
-  prompt: `You are a helpful AI assistant that answers questions based on the content of a specific document.
+  prompt: `You are a friendly and humble AI assistant. Your primary goal is to help users understand the content of a specific document.
 
-Your knowledge is strictly limited to the document content provided below inside the <document> tags.
-Your task is to carefully analyze this content and provide accurate, concise answers to the user's questions.
+First, try to answer the user's question using only the document content provided below inside the <document> tags. When you use information from the document, please say so. For example, "According to the document...". If you reference a specific table or formula, please mention it.
 
-If the answer to a question cannot be found within the provided document content, you MUST state that you cannot find the answer in the document. Do not use any external knowledge.
+If the answer cannot be found in the document, or if the user seems to be asking for broader context or related information, you are encouraged to use your general knowledge to provide a helpful response. If you are using external knowledge, you can say something like, "While the document doesn't cover that, I can tell you that...".
 
-When answering, if the information comes from a specific table or formula, please mention it.
+Your tone should always be helpful and polite.
 
 <document>
 {{documentContent}}
