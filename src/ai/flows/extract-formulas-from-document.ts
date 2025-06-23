@@ -40,7 +40,7 @@ const extractFormulasFromDocumentPrompt = ai.definePrompt({
   Document: {{media url=documentDataUri}}`,
 });
 
-const extractFormulasFromDocumentFlow = ai.defineFlow(
+export const extractFormulasFromDocumentFlow = ai.defineFlow(
   {
     name: 'extractFormulasFromDocumentFlow',
     inputSchema: ExtractFormulasFromDocumentInputSchema,
