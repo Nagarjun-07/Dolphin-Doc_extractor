@@ -4,6 +4,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { AppHeader } from '@/components/layout/app-header';
 import { FileUploadCard } from '@/components/content-extractor/file-upload-card';
 import { ResultsDisplay } from '@/components/content-extractor/results-display';
+import { Chatbot } from '@/components/content-extractor/chatbot';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -31,9 +32,11 @@ export default function HomePage() {
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [documentContext, setDocumentContext] = useState<string | null>(null);
+  const [showChatbot, setShowChatbot] = useState(false);
+
   const { toast } = useToast();
 
-  // This state is used to ensure that client-only components render after hydration
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
@@ -46,46 +49,52 @@ export default function HomePage() {
     setExtractedText(null);
     setExtractedTables(null);
     setExtractedFormulas(null);
+    setDocumentContext(null);
+    setShowChatbot(false);
 
     try {
       const documentDataUri = await readFileAsDataURI(file);
       
-      // Perform extractions in parallel
       const [textResult, tablesResult, formulasResult] = await Promise.allSettled([
         extractTextFromDocument({ documentDataUri }),
         extractTablesFromDocument({ documentDataUri }),
         extractFormulasFromDocument({ documentDataUri }),
       ]);
 
-      if (textResult.status === 'fulfilled') {
-        setExtractedText(textResult.value.extractedText);
-      } else {
+      const newText = textResult.status === 'fulfilled' ? textResult.value.extractedText : null;
+      const newTables = tablesResult.status === 'fulfilled' ? tablesResult.value.tables : null;
+      const newFormulas = formulasResult.status === 'fulfilled' ? formulasResult.value.formulas : null;
+
+      setExtractedText(newText);
+      setExtractedTables(newTables);
+      setExtractedFormulas(newFormulas);
+
+      if (textResult.status === 'rejected') {
         console.error('Text extraction failed:', textResult.reason);
         toast({ variant: "destructive", title: "Text Extraction Error", description: "Failed to extract text." });
       }
 
-      if (tablesResult.status === 'fulfilled') {
-        setExtractedTables(tablesResult.value.tables);
-      } else {
+      if (tablesResult.status === 'rejected') {
         console.error('Table extraction failed:', tablesResult.reason);
         toast({ variant: "destructive", title: "Table Extraction Error", description: "Failed to extract tables." });
       }
 
-      if (formulasResult.status === 'fulfilled') {
-        setExtractedFormulas(formulasResult.value.formulas);
-      } else {
+      if (formulasResult.status === 'rejected') {
         console.error('Formula extraction failed:', formulasResult.reason);
         toast({ variant: "destructive", title: "Formula Extraction Error", description: "Failed to extract formulas." });
       }
       
-      // Set a general error if all fail, or rely on toasts for individual errors
       if (textResult.status === 'rejected' && tablesResult.status === 'rejected' && formulasResult.status === 'rejected') {
          setError('Failed to extract any content from the document. Please try a different file or check the console for details.');
-      } else if (textResult.status === 'fulfilled' || tablesResult.status === 'fulfilled' || formulasResult.status === 'fulfilled') {
-        // Content was extracted, even if some parts failed
-        toast({ title: "Extraction Complete", description: "Content has been processed." });
+      } else {
+        const hasContent = newText || (newTables && newTables.length > 0) || (newFormulas && newFormulas.length > 0);
+        if (hasContent) {
+          toast({ title: "Extraction Complete", description: "Content has been processed." });
+          const combinedContent = prepareCombinedContent(newText, newTables, newFormulas);
+          setDocumentContext(combinedContent);
+          setShowChatbot(true);
+        }
       }
-
 
     } catch (e: any) {
       console.error('Extraction process failed:', e);
@@ -106,7 +115,6 @@ export default function HomePage() {
   }, [extractedText, extractedTables, extractedFormulas, toast]);
 
   if (!isClient) {
-    // Render a loading state or null during SSR and initial client render
     return (
       <div className="flex flex-col min-h-screen bg-background">
         <AppHeader />
@@ -150,6 +158,7 @@ export default function HomePage() {
           )}
         </div>
       </main>
+      {showChatbot && documentContext && <Chatbot documentContext={documentContext} />}
     </div>
   );
 }
