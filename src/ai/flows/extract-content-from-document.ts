@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview Orchestrates the extraction of text, tables, and formulas from a document by running specialized flows in parallel.
+ * @fileOverview Extracts text, tables, and formulas from a document in a single pass.
  *
  * - extractContentFromDocument - A function that handles the content extraction process.
  * - ExtractContentFromDocumentInput - The input type for the function.
@@ -10,10 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-
-import { extractTextFromDocument } from './extract-text-from-document';
-import { extractTablesFromDocument } from './extract-tables-from-document';
-import { extractFormulasFromDocument } from './extract-formulas-from-document';
 
 // Input Schema
 export const ExtractContentFromDocumentInputSchema = z.object({
@@ -32,26 +28,51 @@ const TableSchema = z.object({
 });
 
 export const ExtractContentFromDocumentOutputSchema = z.object({
-  extractedText: z.string().describe('The full extracted text from the document.'),
-  tables: z.array(TableSchema).describe('An array of tables extracted from the document.'),
-  formulas: z.array(z.string()).describe('An array of mathematical formulas extracted from the document.'),
+  extractedText: z.string().describe('The full extracted text from the document, using OCR if necessary.'),
+  tables: z.array(TableSchema).describe('An array of all tables found in the document. If no tables are found, this should be an empty array.'),
+  formulas: z.array(z.string()).describe('An array of all mathematical formulas found in the document. If no formulas are found, this should be an empty array.'),
 });
 export type ExtractContentFromDocumentOutput = z.infer<typeof ExtractContentFromDocumentOutputSchema>;
 
 
 // The main exported function to be called from the app.
-// It orchestrates the individual extraction flows.
 export async function extractContentFromDocument(input: ExtractContentFromDocumentInput): Promise<ExtractContentFromDocumentOutput> {
-    // Using Promise.all to run extractions concurrently for better performance
-    const [textResult, tablesResult, formulasResult] = await Promise.all([
-      extractTextFromDocument({ documentDataUri: input.documentDataUri }),
-      extractTablesFromDocument({ documentDataUri: input.documentDataUri }),
-      extractFormulasFromDocument({ documentDataUri: input.documentDataUri }),
-    ]);
-
-    return {
-      extractedText: textResult.extractedText,
-      tables: tablesResult.tables,
-      formulas: formulasResult.formulas,
-    };
+  return extractContentFromDocumentFlow(input);
 }
+
+
+// The prompt definition
+const extractContentPrompt = ai.definePrompt({
+  name: 'extractContentPrompt',
+  input: {schema: ExtractContentFromDocumentInputSchema},
+  output: {schema: ExtractContentFromDocumentOutputSchema},
+  model: 'googleai/gemini-1.5-flash-latest',
+  prompt: `You are an expert at analyzing documents and extracting structured information.
+  
+  Your task is to process the given document and extract the following three types of content:
+  1.  **Full Text**: Extract all text from the document, performing OCR if needed.
+  2.  **Tables**: Identify and extract all tables. For each table, provide its header and rows.
+  3.  **Formulas**: Identify and extract all mathematical formulas.
+
+  Return the extracted content in the specified JSON format. If a particular content type (e.g., tables or formulas) is not present in the document, return an empty array for that field.
+
+  Document: {{media url=documentDataUri}}`,
+});
+
+// The flow definition
+const extractContentFromDocumentFlow = ai.defineFlow(
+  {
+    name: 'extractContentFromDocumentFlow',
+    inputSchema: ExtractContentFromDocumentInputSchema,
+    outputSchema: ExtractContentFromDocumentOutputSchema,
+  },
+  async (input) => {
+    const {output} = await extractContentPrompt(input);
+    
+    if (!output) {
+      throw new Error("The AI model failed to return structured output for the document.");
+    }
+    
+    return output;
+  }
+);
