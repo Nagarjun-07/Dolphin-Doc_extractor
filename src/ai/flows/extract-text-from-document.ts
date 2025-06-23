@@ -1,4 +1,4 @@
-// This file is machine-generated - edit at your own risk.
+
 'use server';
 /**
  * @fileOverview Extracts text from a document, using OCR when necessary.
@@ -33,6 +33,7 @@ const extractTextPrompt = ai.definePrompt({
   name: 'extractTextPrompt',
   input: {schema: ExtractTextFromDocumentInputSchema},
   output: {schema: ExtractTextFromDocumentOutputSchema},
+  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are an expert in extracting text from documents. Please extract all the text from the provided document. Use OCR if necessary.
 
 Document: {{media url=documentDataUri}}`,

@@ -10,9 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-import { extractTextFromDocument } from '@/ai/flows/extract-text-from-document';
-import { extractTablesFromDocument } from '@/ai/flows/extract-tables-from-document';
-import { extractFormulasFromDocument } from '@/ai/flows/extract-formulas-from-document';
+import { extractContentFromDocument } from '@/ai/flows/extract-content-from-document';
 import type { ExtractedTableData } from '@/types';
 import { downloadFile, prepareCombinedContent } from '@/lib/download';
 
@@ -56,45 +54,25 @@ export default function HomePage() {
     try {
       const documentDataUri = await readFileAsDataURI(file);
       
-      const [textResult, tablesResult, formulasResult] = await Promise.allSettled([
-        extractTextFromDocument({ documentDataUri }),
-        extractTablesFromDocument({ documentDataUri }),
-        extractFormulasFromDocument({ documentDataUri }),
-      ]);
+      const result = await extractContentFromDocument({ documentDataUri });
 
-      const newText = textResult.status === 'fulfilled' ? textResult.value.extractedText : null;
-      const newTables = tablesResult.status === 'fulfilled' ? tablesResult.value.tables : null;
-      const newFormulas = formulasResult.status === 'fulfilled' ? formulasResult.value.formulas : null;
+      const newText = result.extractedText;
+      const newTables = result.tables;
+      const newFormulas = result.formulas;
 
       setExtractedText(newText);
       setExtractedTables(newTables);
       setExtractedFormulas(newFormulas);
 
-      if (textResult.status === 'rejected') {
-        console.error('Text extraction failed:', textResult.reason);
-        toast({ variant: "destructive", title: "Text Extraction Error", description: "Failed to extract text." });
-      }
-
-      if (tablesResult.status === 'rejected') {
-        console.error('Table extraction failed:', tablesResult.reason);
-        toast({ variant: "destructive", title: "Table Extraction Error", description: "Failed to extract tables." });
-      }
-
-      if (formulasResult.status === 'rejected') {
-        console.error('Formula extraction failed:', formulasResult.reason);
-        toast({ variant: "destructive", title: "Formula Extraction Error", description: "Failed to extract formulas." });
-      }
-      
-      if (textResult.status === 'rejected' && tablesResult.status === 'rejected' && formulasResult.status === 'rejected') {
-         setError('Failed to extract any content from the document. Please try a different file or check the console for details.');
+      const hasContent = newText || (newTables && newTables.length > 0) || (newFormulas && newFormulas.length > 0);
+      if (hasContent) {
+        toast({ title: "Extraction Complete", description: "Content has been processed." });
+        const combinedContent = prepareCombinedContent(newText, newTables, newFormulas);
+        setDocumentContext(combinedContent);
+        setShowChatbot(true);
       } else {
-        const hasContent = newText || (newTables && newTables.length > 0) || (newFormulas && newFormulas.length > 0);
-        if (hasContent) {
-          toast({ title: "Extraction Complete", description: "Content has been processed." });
-          const combinedContent = prepareCombinedContent(newText, newTables, newFormulas);
-          setDocumentContext(combinedContent);
-          setShowChatbot(true);
-        }
+        setError('No content could be extracted from the document.');
+        toast({ variant: "destructive", title: "Extraction Warning", description: "No content could be extracted." });
       }
 
     } catch (e: any) {

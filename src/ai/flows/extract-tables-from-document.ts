@@ -1,4 +1,4 @@
-// src/ai/flows/extract-tables-from-document.ts
+
 'use server';
 /**
  * @fileOverview Extracts tables from a document.
@@ -38,9 +38,10 @@ const extractTablesPrompt = ai.definePrompt({
   name: 'extractTablesPrompt',
   input: {schema: ExtractTablesFromDocumentInputSchema},
   output: {schema: ExtractTablesFromDocumentOutputSchema},
+  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are an expert at extracting tables from documents.
 
-  Given the following document, extract all tables.  Return the tables as a JSON array of tables. Each table should have a 'header' field which is an array of strings, and a 'rows' field, which is a 2D array of strings.
+  Given the following document, extract all tables. If no tables are found, return an empty array. Return the tables as a JSON array of tables. Each table should have a 'header' field which is an array of strings, and a 'rows' field, which is a 2D array of strings.
 
   Document: {{media url=documentDataUri}}`,
 });

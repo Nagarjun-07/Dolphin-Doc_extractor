@@ -31,6 +31,7 @@ const qaPrompt = ai.definePrompt({
   name: 'qaPrompt',
   input: {schema: QaOnDocumentInputSchema},
   output: {schema: QaOnDocumentOutputSchema},
+  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are a friendly and humble AI assistant. Your primary goal is to help users understand the content of a specific document.
 
 First, try to answer the user's question using only the document content provided below inside the <document> tags. When you use information from the document, please say so. For example, "According to the document...". If you reference a specific table or formula, please mention it.

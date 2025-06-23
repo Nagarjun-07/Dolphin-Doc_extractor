@@ -1,4 +1,4 @@
-// src/ai/flows/extract-formulas-from-document.ts
+
 'use server';
 /**
  * @fileOverview Extracts mathematical formulas from a document.
@@ -21,7 +21,7 @@ const ExtractFormulasFromDocumentInputSchema = z.object({
 export type ExtractFormulasFromDocumentInput = z.infer<typeof ExtractFormulasFromDocumentInputSchema>;
 
 const ExtractFormulasFromDocumentOutputSchema = z.object({
-  formulas: z.array(z.string()).describe('The extracted mathematical formulas.'),
+  formulas: z.array(z.string()).describe('The extracted mathematical formulas. If no formulas are found, return an empty array.'),
 });
 export type ExtractFormulasFromDocumentOutput = z.infer<typeof ExtractFormulasFromDocumentOutputSchema>;
 
@@ -33,6 +33,7 @@ const extractFormulasFromDocumentPrompt = ai.definePrompt({
   name: 'extractFormulasFromDocumentPrompt',
   input: {schema: ExtractFormulasFromDocumentInputSchema},
   output: {schema: ExtractFormulasFromDocumentOutputSchema},
+  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are an expert in identifying and extracting mathematical formulas from documents.
 
   Analyze the document provided and extract all mathematical formulas.
