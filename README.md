@@ -18,6 +18,45 @@ To get started, take a look at `src/app/page.tsx`.
 
 3.  Open [http://localhost:9002](http://localhost:9002) with your browser to see the result.
 
+# 🐬 DocuDolphin – Document Intelligence, Redefined!
+
+DocuDolphin is an AI-powered **document intelligence platform** built with **Next.js** that allows you to:
+
+✅ Upload documents (PDFs)  
+✅ Extract structured content (text, tables, formulas)  
+✅ Chat with your document using a powerful **AI chatbot**  
+
+Whether you're a researcher, student, lawyer, or analyst – DocuDolphin helps you understand your documents faster than ever.
+
+---
+
+## 🚀 Features
+
+- 🧠 **AI Chatbot** – Ask questions directly from your document and get precise answers.
+- 📄 **PDF Extraction** – Pull out text, tables, and formulas with a few clicks.
+- ⚡ **Fast & Responsive UI** – Powered by Next.js for blazing-fast performance.
+- ☁️ **Easy Vercel Deployment** – One-click deploy your own instance.
+- 🔒 **Secure API Access** – Supports environment variables for private keys.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js (App Router)
+- **AI Engine:** Google AI API
+- **PDF Parsing:** Custom parser integrated into backend logic
+- **Deployment:** Vercel
+
+---
+
+## 🧑‍💻 Getting Started Locally
+
+Clone the repo:
+
+```bash
+git clone https://github.com/Nagarjun-07/Dolphin-Doc_extractor.git
+cd Dolphin-Doc_extractor
+```
 ## Deploying to Vercel
 
 You can easily deploy this project to Vercel.
