@@ -1,6 +1,7 @@
-# DocuDolphin
+# 🐬 DocuDolphin – Document Intelligence, Redefined!
 
 This is a Next.js starter project that allows you to upload documents, extract content, and ask questions about it using an AI-powered chatbot.
+![image](https://github.com/user-attachments/assets/34125f0e-44fe-402a-a5da-335dad9ce91d)
 
 ## Getting Started Locally
 
@@ -18,13 +19,15 @@ To get started, take a look at `src/app/page.tsx`.
 
 3.  Open [http://localhost:9002](http://localhost:9002) with your browser to see the result.
 
-# 🐬 DocuDolphin – Document Intelligence, Redefined!
-
 DocuDolphin is an AI-powered **document intelligence platform** built with **Next.js** that allows you to:
 
 ✅ Upload documents (PDFs)  
 ✅ Extract structured content (text, tables, formulas)  
 ✅ Chat with your document using a powerful **AI chatbot**  
+
+![image](https://github.com/user-attachments/assets/24be2e8c-7ee8-4229-b70a-fbb31b63f0e4)
+
+
 
 Whether you're a researcher, student, lawyer, or analyst – DocuDolphin helps you understand your documents faster than ever.
 
@@ -39,6 +42,7 @@ Whether you're a researcher, student, lawyer, or analyst – DocuDolphin helps y
 - 🔒 **Secure API Access** – Supports environment variables for private keys.
 
 ---
+![image](https://github.com/user-attachments/assets/0526786d-f745-41fe-8a3e-89899ef07144)
 
 ## 🛠️ Tech Stack
 
