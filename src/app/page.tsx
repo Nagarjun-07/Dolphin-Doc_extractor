@@ -77,7 +77,10 @@ export default function HomePage() {
 
     } catch (e: any) {
       console.error('Extraction process failed:', e);
-      const errorMessage = e.message || 'An unexpected error occurred during extraction.';
+      let errorMessage = e.message || 'An unexpected error occurred during extraction.';
+      if (typeof errorMessage === 'string' && errorMessage.includes('503 Service Unavailable')) {
+        errorMessage = "The AI service is currently overloaded. Please wait a moment and try again.";
+      }
       setError(errorMessage);
       toast({ variant: "destructive", title: "Extraction Process Error", description: errorMessage });
     } finally {
