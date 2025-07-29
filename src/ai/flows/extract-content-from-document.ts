@@ -26,7 +26,7 @@ const extractContentPrompt = ai.definePrompt({
   name: 'extractContentPrompt',
   input: {schema: ExtractContentFromDocumentInputSchema},
   output: {schema: ExtractContentFromDocumentOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an expert at analyzing documents and extracting structured information.
   
   Your task is to process the given document and extract the following three types of content:
