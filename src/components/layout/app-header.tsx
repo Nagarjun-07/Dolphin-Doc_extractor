@@ -1,4 +1,3 @@
-
 import { ScanText } from 'lucide-react';
 
 export function AppHeader() {
